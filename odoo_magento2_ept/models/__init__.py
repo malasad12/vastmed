@@ -36,3 +36,4 @@ from . import account
 from . import magento_financial_status_ept
 from . import res_company
 from . import magento_res_partner_ept
+from . import magento_api_request_page

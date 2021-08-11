@@ -158,7 +158,7 @@ class MagentoImportExportEpt(models.TransientModel):
         to_date = datetime.strftime(self.end_date, MAGENTO_DATETIME_FORMAT)
         for instance in instances:
             order_queue_data = magento_order_data_queue_obj.magento_create_order_data_queues(
-                instance, from_date, to_date
+                instance, from_date, to_date, True
             )
         result = self.return_order_queue_form_or_tree_view(order_queue_data)
         return result

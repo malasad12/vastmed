@@ -226,6 +226,11 @@ class MagentoInstance(models.Model):
     magento_verify_ssl = fields.Boolean(
         string="Verify SSL", default=False,
         help="Check this if your Magento site is using SSL certificate")
+    active_user_ids = fields.One2many(
+        "magento.api.request.page",
+        "magento_instance_id",
+        string='Active Users',
+        help='Active Users')
 
     def check_dashboard_view(self):
         """
@@ -383,6 +388,9 @@ class MagentoInstance(models.Model):
                 'magento_cron_configuration_onboarding_state': 'not_done',
                 'is_create_magento_more_instance': False
             })
+            magento_order_counts = self.active_user_ids
+            for magento_order_count in magento_order_counts:
+                magento_order_count.write({'magento_import_order_page_count': 1})
             self.write({'is_onboarding_configurations_done': True})
         else:
             activate = {"active": True}
@@ -476,6 +484,7 @@ class MagentoInstance(models.Model):
             record.import_delivery_method()
             record.import_magento_inventory_locations()
             self.env['magento.financial.status.ept'].create_financial_status(record, 'not_paid')
+            self.env['magento.api.request.page'].update_magento_order_page_count_users_vise(record)
 
     def sync_price_scop(self):
         """

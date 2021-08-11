@@ -704,6 +704,7 @@ class MagentoProductTemplate(models.Model):
         :param order_data_queue_line_id: magento order data queue line id
         :param error: True if any error else False
         """
+        full_image_url = ''
         product_id = product_template_id = False
         if magento_product_id:
             product_id = magento_product_id.odoo_product_id
