@@ -32,16 +32,19 @@ class MagentoImportExportEpt(models.TransientModel):
     magento_instance_ids = fields.Many2many('magento.instance', string="Instances",
                                             help="This field relocates Magento Instance")
     operations = fields.Selection([
+        ('import_product_categories', 'Import Product Categories'),
+        ('import_product_attributes', 'Import Product Attributes'),
+        ('import_product_taxclass', 'Import Product TaxClass'),
+        ('import_products', 'Import Products'),
+        ('import_specific_product', 'Import Specific Product'),
         ('import_customer', 'Import Customer'),
         ('import_sale_order', 'Import Sale Order'),
         ('import_specific_order', 'Import Specific Order'),
-        ('import_products', 'Import Products'),
-        ('map_products', 'Map Products'),
-        ('import_specific_product', 'Import Specific Product'),
         ('import_product_stock', 'Import Product Stock'),
-        ('export_shipment_information', 'Export Shipment Information'),
+        ('export_product_stock', 'Export Product Stock'),
         ('export_invoice_information', 'Export Invoice Information'),
-        ('export_product_stock', 'Export Product Stock')
+        ('export_shipment_information', 'Export Shipment Information'),
+        ('map_products', 'Map Products (using CSV)')
     ], string='Import/ Export Operations', help='Import/ Export Operations')
 
     start_date = fields.Datetime(string="From Date", help="From date.")
@@ -88,6 +91,7 @@ class MagentoImportExportEpt(models.TransientModel):
         magento_instance = self.env['magento.instance']
         account_move = self.env['account.move']
         picking = self.env['stock.picking']
+        product_attribute = self.env['magento.attribute.set']
         message = ''
         if self.magento_instance_ids:
             instances = self.magento_instance_ids
@@ -108,6 +112,15 @@ class MagentoImportExportEpt(models.TransientModel):
             result = self.import_specific_product_operation(instances)
         elif self.operations == 'import_product_stock':
             result = self.import_product_stock_operation(instances)
+        elif self.operations == 'import_product_taxclass':
+            for instance in instances:
+                instance.import_tax_class()
+        elif self.operations == 'import_product_categories':
+            for instance in instances:
+                instance.get_category()
+        elif self.operations == 'import_product_attributes':
+            for instance in instances:
+                product_attribute.import_magento_product_attribute_set(instance)
         elif self.operations == 'export_shipment_information':
             picking.export_shipment_to_magento(instances)
         elif self.operations == 'export_invoice_information':
@@ -418,7 +431,7 @@ class MagentoImportExportEpt(models.TransientModel):
             'product_default_code': variant.default_code,
             'magento_sku': variant.default_code,
             'description': variant.description or "",
-            'sale_description': odoo_template.description_sale if position == 0 else '',
+            'sale_description': odoo_template.description_sale if position == 0 and odoo_template.description_sale else '',
             'instance_id': instance.id
         }
 
@@ -509,7 +522,8 @@ class MagentoImportExportEpt(models.TransientModel):
             'odoo_product_template_id': product_dict.get('product_template_id'),
             'product_type': 'configurable' if odoo_template.product_variant_count > 1 else 'simple',
             'magento_product_name': odoo_template.name,
-            'magento_sku': False if odoo_template.product_variant_count > 1 else product_dict.get('magento_sku')
+            'magento_sku': False if odoo_template.product_variant_count > 1 else product_dict.get('magento_sku'),
+            'export_product_to_all_website': True
         }
         if ir_config_parameter_obj.sudo().get_param("odoo_magento2_ept.set_magento_sales_description"):
             magneto_product_template_dict.update({
@@ -594,7 +608,10 @@ class MagentoImportExportEpt(models.TransientModel):
         """
         magento_product_image_obj = self.env["magento.product.image"]
         magento_product_image_list = []
+        sequence = 1
         for odoo_image in odoo_template.ept_image_ids.filtered(lambda x: not x.product_id):
+            if odoo_template.image_1920 and odoo_image.image == odoo_template.image_1920:
+                sequence = 0
             magento_product_image = magento_product_image_obj.search(
                 [("magento_tmpl_id", "=", magento_template.id),
                  ("odoo_image_id", "=", odoo_image.id)])
@@ -604,8 +621,10 @@ class MagentoImportExportEpt(models.TransientModel):
                     "magento_tmpl_id": magento_template.id,
                     'url': odoo_image.url,
                     'image': odoo_image.image,
-                    'magento_instance_id': magento_template.magento_instance_id.id
+                    'magento_instance_id': magento_template.magento_instance_id.id,
+                    'sequence': sequence
                 })
+            sequence += 1
         if magento_product_image_list:
             magento_product_image_obj.create(magento_product_image_list)
 
@@ -618,7 +637,10 @@ class MagentoImportExportEpt(models.TransientModel):
         """
         magento_product_image_obj = self.env["magento.product.image"]
         magento_product_image_list = []
+        sequence = 1
         for odoo_image in odoo_product.ept_image_ids:
+            if odoo_product.image_1920 and odoo_image.image == odoo_product.image_1920:
+                sequence = 0
             magento_product_image = magento_product_image_obj.search(
                 [("magento_tmpl_id", "=", magento_template.id),
                  ("magento_product_id", "=", magento_product.id),
@@ -630,7 +652,9 @@ class MagentoImportExportEpt(models.TransientModel):
                     "magento_product_id": magento_product.id if magento_product else False,
                     'url': odoo_image.url,
                     'image': odoo_image.image,
-                    'magento_instance_id': magento_template.magento_instance_id.id
+                    'magento_instance_id': magento_template.magento_instance_id.id,
+                    'sequence': sequence
                 })
+            sequence += 1
         if magento_product_image_list:
             magento_product_image_obj.create(magento_product_image_list)

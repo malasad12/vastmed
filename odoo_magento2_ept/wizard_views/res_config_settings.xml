@@ -206,7 +206,7 @@
                             </div>
                             <div class="col-12 col-lg-6 o_setting_box" attrs="{'invisible': [('is_multi_warehouse_in_magento', '=', True)]}">
                                 <div class="o_setting_right_pane">
-                                    <label for="warehouse_ids" string="Warehouses"/>
+                                    <label for="warehouse_ids" string="Export Stock Warehouses"/>
                                     <field name="warehouse_ids" class="oe_inline" attrs="{'required':[('magento_instance_id','!=', False), ('is_multi_warehouse_in_magento', '=', False)]}" widget="many2many_tags"/>
                                     <div class="text-muted" id="sale_coupon">
                                         Warehouses used to compute the stock quantities, when only single warehouse is in Magento

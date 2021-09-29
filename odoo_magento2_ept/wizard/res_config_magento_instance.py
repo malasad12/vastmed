@@ -69,8 +69,8 @@ class ResConfigMagentoInstance(models.TransientModel):
             'magento_verify_ssl': self.magento_verify_ssl
             }
         magento_instance = magento_instance_obj
+        magento_instance = magento_instance.create(vals)
         try:
-            magento_instance = magento_instance.create(vals)
             magento_instance and magento_instance.synchronize_metadata()
         except Exception as error:
             magento_instance.sudo().unlink()
