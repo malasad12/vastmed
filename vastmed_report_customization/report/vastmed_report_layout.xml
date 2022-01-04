@@ -5,7 +5,7 @@
             <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
                 <div class="row">
                     <div class="col-3 my-auto">
-                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 70px;" alt="Logo"/>
                     </div>
                     <div class="col-9 text-right" name="company_address">
                         <div t-field="company.partner_id"
@@ -28,5 +28,6 @@
             </div>
         </xpath>
         <xpath expr="//div[2]/div[hasclass('pt-5')]" position="replace"/>
+        <xpath expr="//div[3]/div/ul/li[last()]" position="replace"/>
     </template>
 </odoo>
