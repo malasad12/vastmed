@@ -57,13 +57,13 @@ class MapslyEventListener(Component):
 
     def get_hook_url(self, event):
         subdomain = 'adapter'
-        mapsly_adapter_server = self.env['ir.config_parameter'].get_param('mapsly.mapsly_adapter_server')
+        mapsly_adapter_server = self.env['ir.config_parameter'].sudo().get_param('mapsly.mapsly_adapter_server')
         if (mapsly_adapter_server):
             subdomain = subdomain + '-' + mapsly_adapter_server
         return 'https://' + subdomain + '.mapsly.com' + '/odoo/webhook/' + event
 
     def get_api_key(self):
-        config_parameter = self.env['ir.config_parameter'].get_param('mapsly.api_key')
+        config_parameter = self.env['ir.config_parameter'].sudo().get_param('mapsly.api_key')
         if not config_parameter:
             return None
         return config_parameter
