@@ -5,6 +5,8 @@ Describes fields and methods for Magento products templates
 """
 import json
 from odoo import models, fields, api
+import logging
+_logger = logging.getLogger(__name__)
 
 PRODUCT_TEMPLATE = 'product.template'
 MAGENTO_PRODUCT = 'magento.product.product'
@@ -704,6 +706,8 @@ class MagentoProductTemplate(models.Model):
         :param order_data_queue_line_id: magento order data queue line id
         :param error: True if any error else False
         """
+        full_image_url = ''
+        _logger.info("printing from line711 %s\n\n"%(media_gallery_response))
         product_id = product_template_id = False
         if magento_product_id:
             product_id = magento_product_id.odoo_product_id
@@ -730,6 +734,7 @@ class MagentoProductTemplate(models.Model):
                         product_template_id, magento_instance, full_image_url, image_url)
                 elif not magento_prod_image.odoo_image_id:
                     magento_prod_image.write({'odoo_image_id': magento_prod_image.id})
+            _logger.info('From line 735 full_image_url: %s bool field %s and error: %s and erro bool field %s)' % (full_image_url,bool(full_image_url),error,bool(error)))
         return full_image_url, error
 
     @staticmethod
