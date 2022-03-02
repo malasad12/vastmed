@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # sphinx build directories
 _build/
 
@@ -39,3 +40,7 @@ setup/win32/static/postgresql*.exe
 /man/
 /share/
 /src/
+=======
+*.pyc
+.idea/
+>>>>>>> 0ec6116896761d5d63796a35884222061e2dedeb

@@ -76,7 +76,7 @@ class MagentoOrderDataQueueLineEpt(models.Model):
         for order_id in items:
             magento_order_ref = order_id.get('increment_id', False)
             if not order_queue:
-                order_queue = self.magento_create_order_queue(magento_instance)
+                order_queue, count = self.magento_create_order_queue(magento_instance)
                 total_order_queues += 1
             order_queue_line_vals = {}
             data = json.dumps(order_id)
@@ -88,6 +88,7 @@ class MagentoOrderDataQueueLineEpt(models.Model):
                 'state': 'draft',
             })
             self.create(order_queue_line_vals)
+            self._cr.commit()
             count = count + 1
             if count == 50:
                 count = 0
@@ -103,19 +104,21 @@ class MagentoOrderDataQueueLineEpt(models.Model):
         """
         # Here search order queue having below 50 order queue line, then add queue line in that queue
         # Or else create new order queue
+        queue_line_count = 0
         order_data_queue_obj = self.env[MAGENTO_ORDER_DATA_QUEUE_EPT].\
             search([('state', '=', 'draft'), ('magento_instance_id', '=', magento_instance.id)]).\
             filtered(lambda x: x.order_queue_line_total_record and x.order_queue_line_total_record < 50)
         order_queue_data_id = order_data_queue_obj[0] if order_data_queue_obj else False
         if order_queue_data_id:
-            return order_queue_data_id
+            queue_line_count = order_queue_data_id.order_queue_line_total_record
+            return order_queue_data_id, queue_line_count
         else:
             order_queue_vals = {
                 'magento_instance_id': magento_instance and magento_instance.id or False,
                 'state': 'draft',
             }
             order_queue_data_id = order_data_queue_obj.create(order_queue_vals)
-            return order_queue_data_id
+            return order_queue_data_id, queue_line_count
 
     def auto_import_order_queue_data(self):
         """

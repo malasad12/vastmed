@@ -45,7 +45,7 @@ class SyncImportMagentoProductQueueLine(models.Model):
     )
     do_not_update_existing_product = fields.Boolean(
         string="Do not update existing Products?",
-        help="If checked and Product(s) found in odoo/magento layer, then not update the Product(s)",default=False
+        help="If checked and Product(s) found in odoo/magento layer, then not update the Product(s)"
     )
 
     def create_import_specific_product_queue_line(
@@ -53,7 +53,7 @@ class SyncImportMagentoProductQueueLine(models.Model):
             items,
             instance,
             product_queue_data,
-            do_not_update_product = False
+            do_not_update_product = True
     ):
         """
         Creates a product data queue line and splits product queue line after 50 orders.

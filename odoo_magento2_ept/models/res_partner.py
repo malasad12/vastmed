@@ -342,11 +342,13 @@ class ResPartner(models.Model):
         :return: partner dictionary and Log line
         """
         magento_partner_obj = self.env[MAGENTO_RES_PARTNER_EPT]
+        customer = False
         customer_id = response.get('customer_id', False)
         magento_store = magento_instance.magento_website_ids.store_view_ids.filtered(
             lambda l: l.magento_storeview_id == str(response.get('store_id')))
-        customer = magento_partner_obj.search([('magento_customer_id', '=', customer_id),
-                                               ('magento_instance_id', '=', magento_instance.id)], limit=1)
+        if customer_id:
+            customer = magento_partner_obj.search([('magento_customer_id', '=', customer_id),
+                                                   ('magento_instance_id', '=', magento_instance.id)], limit=1)
         partner_args = {'magento_invoice_customer': magento_invoice_customer,
                         'magento_delivery_customer': magento_delivery_customer,
                         'customer': customer,
