@@ -130,7 +130,7 @@ class SyncImportMagentoProductQueue(models.Model):
             instance,
             from_date,
             to_date,
-            do_not_update_product = True
+            do_not_update_product = False
     ):
         """
         Creates product queues when sync/ import products from Magento.
