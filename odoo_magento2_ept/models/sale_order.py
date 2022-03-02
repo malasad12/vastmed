@@ -521,7 +521,7 @@ class SaleOrder(models.Model):
                       "invoice nor shipped." % order_response.get('increment_id')
         elif order_response.get('status') not in ['pending','processing','complete']:
             message = "Order {} skipped due to financial status not found of order status '{}' ." .format(order_response.get(
-                'increment_id'), order_response.get('status'))        
+                'increment_id'), order_response.get('status'))
         else:
             message = "Order %s skipped due to Partial Invoice and Shipment are not Supported." % order_response.get(
                 'increment_id')

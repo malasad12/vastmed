@@ -2,6 +2,7 @@
 # See LICENSE file for full copyright and licensing details.
 {
     'name': 'Common Connector Library',
+
     'version': '14.0.1.20',
     'category': 'Sales',
     'license': 'OPL-1',
