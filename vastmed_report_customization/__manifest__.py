@@ -11,11 +11,11 @@
         "stock"
     ],
     "data": [
-        "data/vastmed_report_paperformat.xml",
-        "report/vastmed_report_layout.xml",
-        "report/vastmed_report_invoice.xml",
-        "report/vastmed_report_saleorder.xml",
-        "report/vastmed_report_deliveryslip.xml",
+        # "data/vastmed_report_paperformat.xml",
+        # "report/vastmed_report_layout.xml",
+        # "report/vastmed_report_invoice.xml",
+        # "report/vastmed_report_saleorder.xml",
+        # "report/vastmed_report_deliveryslip.xml",
     ],
     "qweb": [],
 
